@@ -111,7 +111,7 @@ const Scene: React.FC<{scene:ShortScene;index:number}> = ({scene,index}) => {
   const {fps,durationInFrames}=useVideoConfig();
   const enter=spring({frame,fps,config:{damping:22,stiffness:62}});
   const progress=interpolate(frame,[0,durationInFrames],[0,1],{extrapolateRight:"clamp"});
-  const exit=interpolate(frame,[durationInFrames-18,durationInFrames],[1,0],{extrapolateLeft:"clamp",extrapolateRight:"clamp"});
+  const exit=interpolate(frame,[0,12,durationInFrames-18,durationInFrames],[0,1,1,0],{extrapolateLeft:"clamp",extrapolateRight:"clamp"});
   const camera=interpolate(progress,[0,1],[1.13,1.025]);
   const drift=interpolate(frame,[0,durationInFrames],[0,1]);
   const accent=scene.accent;
