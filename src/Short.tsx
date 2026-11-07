@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  AbsoluteFill, Audio, staticFile, Sequence, interpolate, spring,
+  AbsoluteFill, Sequence, interpolate, spring,
   useCurrentFrame, useVideoConfig
 } from "remotion";
 import { shortContent, ShortScene } from "./content";
@@ -167,7 +167,6 @@ export const TeluguShort:React.FC=()=>{
   let from=0;
   return (
     <AbsoluteFill style={{background:"#080D14"}}>
-      <Audio src={staticFile("audio/voiceover.mp3")} volume={1}/>
       {shortContent.scenes.map((scene,index)=>{
         const start=from; from+=scene.durationInFrames;
         return <Sequence key={scene.id} from={start} durationInFrames={scene.durationInFrames}><Scene scene={scene} index={index}/></Sequence>;
