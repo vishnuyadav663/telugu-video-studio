@@ -24,15 +24,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y fonts-noto-core
 
-      - name: Download narration audio
-        run: |
-          mkdir -p public/audio
-          curl --fail --location --retry 3 --retry-delay 2 \
-            "https://d2ol7oe51mr4n9.cloudfront.net/user_3KWwnEguYrcZm3Fs6HIAoQBn5dP/c75943b5-fe2b-4962-8e13-5e9b657a007f.mp3" \
-            --output public/audio/voiceover.mp3
-          test -s public/audio/voiceover.mp3
-          file public/audio/voiceover.mp3
-
       - name: Install project dependencies
         run: npm install
 
