@@ -35,8 +35,6 @@ const Artwork: React.FC<{type:ShortScene["visual"]; frame:number}> = ({type,fram
         <rect x="450" y="370" width="480" height="270" rx="12" fill="#080D13" stroke="#5C6875" strokeWidth="4"/>
         <path d="M500 570 L610 470 L700 530 L820 420 L900 470" fill="none" stroke="#FF625C" strokeWidth="13"/>
         <path d="M500 590 H900" stroke="#FF625C" strokeWidth="5" opacity=".6"/>
-        <text x="690" y="435" textAnchor="middle" fill="#F3D28A" fontSize="36" letterSpacing="8">FOREX RESERVES</text>
-        <text x="690" y="610" textAnchor="middle" fill="#FF645D" fontSize="88" fontWeight="900">CRISIS</text>
         <path d="M0 790 Q280 700 550 800 T1080 790 V1040 H0Z" fill="#080C12"/>
       </g>}
       {type==="reserves" && <g transform={`translate(${-drift*.45} 0)`}>
@@ -49,7 +47,6 @@ const Artwork: React.FC<{type:ShortScene["visual"]; frame:number}> = ({type,fram
         <path d="M600 510 L645 450 L780 450 L830 510Z" fill="#405664"/>
         <path d="M690 440 V360" stroke="#D8E0E4" strokeWidth="10"/>
         <path d="M690 360 Q760 330 820 360 L820 410 L690 410Z" fill="#B94A35"/>
-        <text x="540" y="250" fill="#F1C76E" fontSize="52" textAnchor="middle" letterSpacing="6">IMPORTS • OIL • DEBT</text>
         <path d="M120 820 H950" stroke="#FFB84D" strokeWidth="5" strokeDasharray="20 18"/>
       </g>}
       {type==="vault" && <g transform={`translate(0 ${drift*.18})`}>
@@ -89,15 +86,12 @@ const Artwork: React.FC<{type:ShortScene["visual"]; frame:number}> = ({type,fram
         <path d="M120 720 Q500 250 940 560" fill="none" stroke="#F5C96D" strokeWidth="8" strokeDasharray="18 16"/>
         <g transform="translate(530 420) rotate(-18)"><path d="M-250 0 L-40 -35 L40 -180 L90 -180 L70 -35 L250 0 L250 35 L70 20 L90 145 L45 145 L-40 20 L-250 35Z" fill="#E9EDF0" stroke="#8296A4" strokeWidth="6"/></g>
         <circle cx="120" cy="720" r="28" fill="#FF675D"/><circle cx="940" cy="560" r="28" fill="#FF675D"/>
-        <text x="120" y="790" fill="#F4F0E8" fontSize="34" textAnchor="middle">MUMBAI</text>
-        <text x="940" y="630" fill="#F4F0E8" fontSize="34" textAnchor="middle">LONDON</text>
       </g>}
       {type==="repayment" && <g transform={`translate(0 ${drift*.12})`}>
         <path d="M90 750 V420 H990 V750Z" fill="#253340" stroke="#C5B48A" strokeWidth="9"/>
         <path d="M55 420 L540 230 L1025 420Z" fill="#596A75" stroke="#E5D2A4" strokeWidth="9"/>
         {Array.from({length:7},(_,i)=><g key={i}><rect x={160+i*125} y="450" width="48" height="290" fill="#B4C0C6"/><path d={`M${150+i*125} 450 H${218+i*125}`} stroke="#E3E7E8" strokeWidth="12"/></g>)}
         <path d="M90 770 H990" stroke="#E6C77D" strokeWidth="18"/>
-        <text x="540" y="350" fill="#F7E6BC" fontSize="44" textAnchor="middle" letterSpacing="8">BANK OF ENGLAND</text>
         <g transform="translate(320 820)"><GoldBar x="0" y="0"/><GoldBar x="180" y="0"/><GoldBar x="360" y="0"/></g>
       </g>}
       {type==="payoff" && <g transform={`translate(${-drift*.2} 0)`}>
@@ -153,6 +147,15 @@ const Scene: React.FC<{scene:ShortScene;index:number}> = ({scene,index}) => {
           <span>AN INDIA STORY</span><span>1991 • ARCHIVE RECONSTRUCTION</span>
         </div>
       </div>
+      <AbsoluteFill style={{pointerEvents:"none"}}>
+        {Array.from({length:34},(_,i)=>{
+          const x=(i*137+41)%1080;
+          const y=(i*223+79)%1500;
+          const size=2+(i%3);
+          const travel=((frame*(0.22+(i%5)*0.035)+i*53)%190)-95;
+          return <div key={i} style={{position:"absolute",left:x,top:y+travel,width:size,height:size,borderRadius:20,background:i%4===0?"#F5D18B":"#D8E0E5",opacity:.12+(i%4)*.035,boxShadow:"0 0 9px rgba(255,220,160,.45)"}}/>;
+        })}
+      </AbsoluteFill>
       <AbsoluteFill style={{pointerEvents:"none",background:"radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(0,0,0,.24) 68%,rgba(0,0,0,.82) 100%)"}}/>
       <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:.11,backgroundImage:"repeating-linear-gradient(0deg,transparent 0px,rgba(255,255,255,.55) 1px,transparent 2px)",backgroundSize:"100% 4px"}}/>
       <div style={{position:"absolute",inset:0,border:"1px solid rgba(255,255,255,.10)",margin:22,pointerEvents:"none"}}/>
