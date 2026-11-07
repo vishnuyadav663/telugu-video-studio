@@ -22,9 +22,6 @@ const Scene: React.FC<{ scene: ShortScene; index: number }> = ({ scene, index })
   const zoom = interpolate(progress, [0, 1], [1.08, 1.0]);
   const shake = scene.visual === "convoy" && frame >= 60 && frame <= 78
     ? Math.sin(frame * 2.5) * 8 : 0;
-  const goldCount = Math.floor(interpolate(frame, [35, 115], [0, 46.91], {
-    extrapolateLeft: "clamp", extrapolateRight: "clamp"
-  }));
   const countdown = Math.floor(interpolate(frame, [0, 60], [21, 15], {
     extrapolateLeft: "clamp", extrapolateRight: "clamp"
   }));
