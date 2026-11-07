@@ -115,36 +115,47 @@ const Artwork: React.FC<{type:ShortScene["visual"]; frame:number}> = ({type,fram
 const Scene: React.FC<{scene:ShortScene;index:number}> = ({scene,index}) => {
   const frame=useCurrentFrame();
   const {fps,durationInFrames}=useVideoConfig();
-  const enter=spring({frame,fps,config:{damping:20,stiffness:75}});
+  const enter=spring({frame,fps,config:{damping:22,stiffness:62}});
   const progress=interpolate(frame,[0,durationInFrames],[0,1],{extrapolateRight:"clamp"});
-  const exit=interpolate(frame,[durationInFrames-14,durationInFrames],[1,0],{extrapolateLeft:"clamp",extrapolateRight:"clamp"});
-  const scale=interpolate(progress,[0,1],[1.12,1.0]);
+  const exit=interpolate(frame,[durationInFrames-18,durationInFrames],[1,0],{extrapolateLeft:"clamp",extrapolateRight:"clamp"});
+  const camera=interpolate(progress,[0,1],[1.13,1.025]);
+  const drift=interpolate(frame,[0,durationInFrames],[0,1]);
   const accent=scene.accent;
+  const reveal=interpolate(enter,[0,1],[42,0]);
   return (
-    <AbsoluteFill style={{background:"#080D14",color:"#FFF",overflow:"hidden",opacity:exit}}>
-      <AbsoluteFill style={{height:"67%",transform:`scale(${scale})`,transformOrigin:"center center"}}>
+    <AbsoluteFill style={{background:"#05080D",color:"#FFF",overflow:"hidden",opacity:exit}}>
+      <AbsoluteFill style={{transform:`scale(${camera})`,transformOrigin:"50% 46%"}}>
         <Artwork type={scene.visual} frame={frame}/>
       </AbsoluteFill>
-      <AbsoluteFill style={{background:"linear-gradient(180deg,rgba(3,7,12,.05) 0%,rgba(3,7,12,.08) 35%,#080D14 65%,#080D14 100%)"}}/>
-      <div style={{position:"absolute",top:78,left:64,right:64,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{fontFamily:"Arial,sans-serif",fontSize:23,letterSpacing:5,fontWeight:800,color:accent}}>INDIA • 1991</div>
-        <div style={{fontFamily:"Arial,sans-serif",fontSize:20,color:"#FFFFFFA8"}}>{String(index+1).padStart(2,"0")} / 08</div>
-      </div>
-      <div style={{position:"absolute",top:1040,left:72,right:72,opacity:enter,transform:`translateY(${(1-enter)*45}px)`}}>
-        <div style={{fontFamily:"'Noto Sans Telugu','Nirmala UI',sans-serif",fontSize:70,fontWeight:900,lineHeight:1.35,whiteSpace:"pre-line",textShadow:"0 5px 28px #000"}}>{scene.headline}</div>
-        <div style={{width:140,height:8,background:accent,borderRadius:8,marginTop:26}}/>
-        <div style={{fontFamily:"'Noto Sans Telugu','Nirmala UI',sans-serif",fontSize:34,lineHeight:1.55,color:"#E7EDF3",marginTop:26,fontWeight:600}}>{scene.subtitle}</div>
-      </div>
-      <div style={{position:"absolute",bottom:112,left:72,right:72}}>
-        <div style={{height:6,background:"#FFFFFF35",borderRadius:8,overflow:"hidden"}}>
-          <div style={{width:`${((index+progress)/8)*100}%`,height:"100%",background:accent}}/>
+      <AbsoluteFill style={{background:"linear-gradient(180deg,rgba(3,7,12,.46) 0%,rgba(3,7,12,.04) 24%,rgba(3,7,12,.04) 48%,rgba(3,7,12,.78) 72%,#05080D 100%)"}}/>
+      <AbsoluteFill style={{background:"linear-gradient(112deg,transparent 20%,rgba(255,224,164,.075) 48%,transparent 70%)",transform:`translateX(${interpolate(drift,[0,1],[-420,420])}px)`}}/>
+      <div style={{position:"absolute",top:68,left:66,right:66,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:16}}>
+          <div style={{width:9,height:9,borderRadius:20,background:accent,boxShadow:`0 0 22px ${accent}`}}/>
+          <div style={{fontFamily:"Arial,sans-serif",fontSize:20,letterSpacing:6,fontWeight:800,color:"#F2E8D4"}}>INDIA 1991 <span style={{color:"#FFFFFF70"}}>/ THE GOLD CRISIS</span></div>
         </div>
-        <div style={{marginTop:22,display:"flex",justifyContent:"space-between",fontFamily:"Arial,sans-serif",fontSize:17,letterSpacing:3,color:"#FFFFFF99"}}>
-          <span>TELUGU HISTORY</span><span>FOLLOW FOR MORE</span>
+        <div style={{fontFamily:"Arial,sans-serif",fontSize:19,letterSpacing:3,color:"#FFFFFFB0"}}>{String(index+1).padStart(2,"0")} — 08</div>
+      </div>
+      <div style={{position:"absolute",left:70,right:70,bottom:250,opacity:enter,transform:`translateY(${reveal}px)`}}>
+        <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:22}}>
+          <div style={{width:54,height:3,background:accent}}/>
+          <div style={{fontFamily:"Arial,sans-serif",fontSize:18,letterSpacing:5,fontWeight:700,color:accent}}>{scene.label}</div>
+        </div>
+        <div style={{fontFamily:"'Noto Sans Telugu','Nirmala UI',sans-serif",fontSize:68,fontWeight:900,lineHeight:1.24,whiteSpace:"pre-line",letterSpacing:"-.5px",textShadow:"0 8px 38px rgba(0,0,0,.9)",maxWidth:940}}>{scene.headline}</div>
+        <div style={{width:116,height:5,background:accent,marginTop:24,boxShadow:`0 0 22px ${accent}66`}}/>
+        <div style={{fontFamily:"'Noto Sans Telugu','Nirmala UI',sans-serif",fontSize:31,lineHeight:1.5,color:"#E7E0D4",marginTop:22,fontWeight:500,maxWidth:900,textShadow:"0 3px 18px #000"}}>{scene.subtitle}</div>
+      </div>
+      <div style={{position:"absolute",bottom:104,left:70,right:70}}>
+        <div style={{height:3,background:"#FFFFFF35",overflow:"hidden"}}>
+          <div style={{width:`${((index+progress)/8)*100}%`,height:"100%",background:accent,boxShadow:`0 0 14px ${accent}`}}/>
+        </div>
+        <div style={{marginTop:18,display:"flex",justifyContent:"space-between",fontFamily:"Arial,sans-serif",fontSize:15,letterSpacing:4,color:"#FFFFFF8A"}}>
+          <span>AN INDIA STORY</span><span>1991 • ARCHIVE RECONSTRUCTION</span>
         </div>
       </div>
-      <AbsoluteFill style={{pointerEvents:"none",background:"radial-gradient(ellipse at center,transparent 42%,rgba(0,0,0,.72) 100%)"}}/>
-      <div style={{position:"absolute",inset:0,opacity:.055,backgroundImage:"repeating-linear-gradient(0deg,transparent 0px,rgba(255,255,255,.8) 1px,transparent 2px)",backgroundSize:"100% 5px"}}/>
+      <AbsoluteFill style={{pointerEvents:"none",background:"radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(0,0,0,.24) 68%,rgba(0,0,0,.82) 100%)"}}/>
+      <div style={{position:"absolute",inset:0,pointerEvents:"none",opacity:.11,backgroundImage:"repeating-linear-gradient(0deg,transparent 0px,rgba(255,255,255,.55) 1px,transparent 2px)",backgroundSize:"100% 4px"}}/>
+      <div style={{position:"absolute",inset:0,border:"1px solid rgba(255,255,255,.10)",margin:22,pointerEvents:"none"}}/>
     </AbsoluteFill>
   );
 };
