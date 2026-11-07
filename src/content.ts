@@ -1,74 +1,75 @@
-export type ShortScene = {
+export type KarnaScene = {
   id: number;
   label: string;
   durationInFrames: number;
   headline: string;
   subtitle: string;
-  visual: "crisis" | "reserves" | "vault" | "convoy" | "airlift" | "flight" | "repayment" | "payoff";
+  visual: "battlefield" | "faceoff" | "wheel" | "struggle" | "reminder" | "bow" | "arrow" | "silence";
   accent: string;
-  narration: string;
+  narrationCue: string;
 };
 
 export const shortContent = {
-  title: "1991 భారత బంగారం తాకట్టు రహస్యం",
-  totalFrames: 2259,
+  title: "కర్ణుడి చివరి క్షణాలు | మహాభారతం",
   fps: 30,
   scenes: [
     {
-      id: 1, label: "THE HOOK", durationInFrames: 305,
-      headline: "దేశ బంగారమే\nవిదేశాలకు!",
-      subtitle: "1991లో అప్పులు తీర్చడానికి కూడా భారత్ దగ్గర డాలర్లు లేవు!",
-      visual: "crisis", accent: "#FF5757",
-      narration: "1991లో... విదేశీ అప్పులు తీర్చడానికి కూడా భారత్ దగ్గర డాలర్లు లేవు! చివరికి దేశ బంగారాన్నే విదేశాలకు పంపాల్సి వచ్చింది!"
+      id: 1, label: "THE FINAL DUEL", durationInFrames: 180,
+      headline: "కురుక్షేత్రంలో…\nచివరి సమరం",
+      subtitle: "కర్ణుడు • అర్జునుడు • ఒక నిర్ణయాత్మక క్షణం",
+      visual: "battlefield", accent: "#E8B96D",
+      narrationCue: "కర్ణుడు, అర్జునుడు ముఖాముఖి తలపడ్డారు."
     },
     {
-      id: 2, label: "THE CRISIS", durationInFrames: 264,
-      headline: "కేవలం 2–3 వారాల\nదిగుమతులకే నిల్వలు",
-      subtitle: "చమురు కొనడానికి, విదేశీ అప్పులు తీర్చడానికి డాలర్లు కావాలి!",
-      visual: "reserves", accent: "#FFB84D",
-      narration: "విదేశీ మారక నిల్వలు మూడు వారాల దిగుమతులకే సరిపోయాయి. చమురు కొనడానికి, అప్పులు తీర్చడానికి డాలర్లు కావాలి!"
+      id: 2, label: "TWO WARRIORS", durationInFrames: 180,
+      headline: "ఒకవైపు కర్ణుడు…\nమరోవైపు అర్జునుడు",
+      subtitle: "రథాలపై సాగిన భీకర ద్వంద్వయుద్ధం",
+      visual: "faceoff", accent: "#E8B96D",
+      narrationCue: "బాణాల వర్షంలో యుద్ధం ఉధృతమైంది."
     },
     {
-      id: 3, label: "THE SECRET OPERATION", durationInFrames: 345,
-      headline: "46.91 టన్నుల\nబంగారం",
-      subtitle: "జూలై 4 నుంచి 18 వరకు • నాలుగు విడతల్లో",
-      visual: "vault", accent: "#FFD166",
-      narration: "రిజర్వ్ బ్యాంక్ సంచలన నిర్ణయం తీసుకుంది. జూలై 4 నుంచి 18 వరకు, నాలుగు విడతల్లో 46.91 టన్నుల బంగారాన్ని విమానాల్లో పంపించింది!"
+      id: 3, label: "THE TURN", durationInFrames: 180,
+      headline: "అప్పుడే…\nకర్ణుడి రథచక్రం",
+      subtitle: "భూమిలో కూరుకుపోయిన చక్రం",
+      visual: "wheel", accent: "#D99A58",
+      narrationCue: "యుద్ధం మధ్యలో కర్ణుడి రథచక్రం భూమిలో దిగబడింది."
     },
     {
-      id: 4, label: "THE ROAD INCIDENT", durationInFrames: 264,
-      headline: "కాన్వాయ్‌లో\nఅనుకోని ఆటంకం!",
-      subtitle: "కాన్వాయ్‌లోని ఒక కారుకు టైరు సమస్య రావడంతో ప్రయాణం ఆగింది",
-      visual: "convoy", accent: "#FF6B45",
-      narration: "ఒక భారీ సరుకు వాహనం, కాన్వాయ్‌లోని కారుకు టైరు సమస్య రావడంతో, మార్గమధ్యంలో ఆగింది. సిబ్బంది అప్రమత్తమయ్యారు!"
+      id: 4, label: "A MOMENT OF VULNERABILITY", durationInFrames: 180,
+      headline: "చక్రాన్ని పైకి\nలేపేందుకు కర్ణుడి ప్రయత్నం",
+      subtitle: "ఆయుధం పక్కన పెట్టి రథం దగ్గరకు వంగాడు",
+      visual: "struggle", accent: "#D99A58",
+      narrationCue: "చక్రాన్ని బయటకు తీయడానికి కర్ణుడు ప్రయత్నించాడు."
     },
     {
-      id: 5, label: "THE AIRLIFT", durationInFrames: 284,
-      headline: "బంగారం విమానం\nఎక్కింది!",
-      subtitle: "సుమారు 405 మిలియన్ అమెరికన్ డాలర్ల రుణం",
-      visual: "airlift", accent: "#F6C85F",
-      narration: "కట్టుదిట్టమైన భద్రత మధ్య బంగారం విమానంలోకి చేరింది. ఈ తాకట్టు ద్వారా సుమారు 405 మిలియన్ డాలర్లు సమీకరించారు!"
+      id: 5, label: "KRISHNA'S REMINDER", durationInFrames: 180,
+      headline: "కృష్ణుడు అర్జునుడిని\nఆపలేదు",
+      subtitle: "గతంలో జరిగిన అధర్మాన్ని గుర్తుచేశాడు",
+      visual: "reminder", accent: "#83C9B5",
+      narrationCue: "కృష్ణుడు, ద్రౌపది అవమానం సహా కర్ణుడి గత చర్యలను గుర్తుచేశాడు."
     },
     {
-      id: 6, label: "THE TURNING POINT", durationInFrames: 284,
-      headline: "సంక్షోభం నుంచి\nసంస్కరణల దిశగా",
-      subtitle: "అత్యవసర చెల్లింపుల ఒత్తిడిని ఎదుర్కోవడంలో ఈ నిధులు కీలకం",
-      visual: "flight", accent: "#79D6C5",
-      narration: "బ్యాంక్ ఆఫ్ ఇంగ్లాండ్, బ్యాంక్ ఆఫ్ జపాన్‌తో ఒప్పందం కుదిరింది. ఆ నిధులు అత్యవసర విదేశీ చెల్లింపులకు ఊరటనిచ్చాయి!"
+      id: 6, label: "THE DECISION", durationInFrames: 180,
+      headline: "అర్జునుడి చేతిలో\nగాండీవం సిద్ధమైంది",
+      subtitle: "యుద్ధం ఒక్క క్షణంలో ముగియబోతోంది",
+      visual: "bow", accent: "#E8B96D",
+      narrationCue: "కృష్ణుడి మాటలతో అర్జునుడు నిర్ణయం తీసుకున్నాడు."
     },
     {
-      id: 7, label: "THE REDEMPTION", durationInFrames: 244,
-      headline: "నవంబర్ 1991\nరుణం తీర్చేశారు",
-      subtitle: "కానీ బంగారం వెంటనే భారత్‌కు తిరిగి రాలేదు",
-      visual: "repayment", accent: "#65D6A5",
-      narration: "నవంబర్ 1991 నాటికి రుణం పూర్తిగా తీర్చారు. కానీ బంగారం వెంటనే భారత్‌కు తిరిగి రాలేదు!"
+      id: 7, label: "THE FATAL ARROW", durationInFrames: 180,
+      headline: "బాణం దూసుకెళ్లింది…",
+      subtitle: "కర్ణుడి జీవితం అక్కడితో ముగిసింది",
+      visual: "arrow", accent: "#E8B96D",
+      narrationCue: "అర్జునుడి బాణం కర్ణుడిని తాకింది."
     },
     {
-      id: 8, label: "THE PAYOFF", durationInFrames: 269,
-      headline: "ఒక కఠిన నిర్ణయం…\nచరిత్రలో నిలిచిన కథ",
-      subtitle: "1991 భారత ఆర్థిక సంక్షోభం",
-      visual: "payoff", accent: "#FFD166",
-      narration: "ఈ కఠిన నిర్ణయం, ఆర్థిక సంస్కరణల ఆరంభ కాలంలో భారత్‌ను డిఫాల్ట్ ముప్పు నుంచి కాపాడటంలో కీలకమైంది!"
+      id: 8, label: "THE QUESTION", durationInFrames: 180,
+      headline: "కర్ణుడు ఓడింది\nయుద్ధంలోనా… విధి చేతనా?",
+      subtitle: "మహాభారతంలో ఇప్పటికీ చర్చకు దారి తీసే ఘట్టం",
+      visual: "silence", accent: "#C8A77A",
+      narrationCue: "కర్ణుడి అంతం… ధర్మం, విధి గురించి ఒక ప్రశ్నను మిగిల్చింది."
     }
-  ] satisfies ShortScene[]
+  ] satisfies KarnaScene[]
 };
+
+export const totalFrames = shortContent.scenes.reduce((sum, scene) => sum + scene.durationInFrames, 0);
