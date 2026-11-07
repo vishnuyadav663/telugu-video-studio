@@ -1,0 +1,45 @@
+name: Render Telugu Short
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Telugu fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-core
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Ensure Remotion browser
+        run: npx remotion browser ensure
+
+      - name: Render vertical Short
+        run: |
+          mkdir -p out
+          npx remotion render src/index.tsx TeluguShort out/telugu-short.mp4 --codec=h264
+
+      - name: Upload MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: telugu-short-video
+          path: out/telugu-short.mp4
+          if-no-files-found: error
+          retention-days: 7
