@@ -1,6 +1,8 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Audio,
+  staticFile,
   Sequence,
   interpolate,
   spring,
@@ -153,6 +155,7 @@ export const TeluguShort: React.FC = () => {
   let from = 0;
   return (
     <AbsoluteFill style={{ backgroundColor: "#101722" }}>
+      <Audio src={staticFile("audio/voiceover.wav")} />
       {shortContent.scenes.map((scene, index) => {
         const start = from;
         from += scene.durationInFrames;
