@@ -1,58 +1,26 @@
-name: Lemo-Opuscar Render
-
+name: Lemo-Opuscar Dronacharya Film
 on:
   workflow_dispatch:
-    inputs:
-      film_dir:
-        description: "Repository folder containing the film index.html"
-        required: true
-        default: "films/dronacharya"
-        type: string
-      fps:
-        description: "Output frames per second"
-        required: true
-        default: "24"
-        type: choice
-        options: ["24", "30"]
-      size:
-        description: "Output dimensions"
-        required: true
-        default: "1080x1920"
-        type: choice
-        options: ["1080x1920", "1920x1080"]
-
 permissions:
   contents: read
-
 jobs:
   render:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
-      - name: Checkout your video project
+      - name: Checkout video project
         uses: actions/checkout@v4
-
-      - name: Validate film folder
-        env:
-          FILM_DIR: ${{ inputs.film_dir }}
-        run: |
-          test -f "$FILM_DIR/index.html" || {
-            echo "::error::No index.html found in $FILM_DIR. Add a Lemo-Opuscar film project first."
-            exit 1
-          }
-
-      - name: Install Node.js and Python
+      - name: Set up Node and Python
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Install FFmpeg 7+
         shell: bash
         run: |
+          set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y wget xz-utils
           mkdir -p "$RUNNER_TEMP/ffmpeg"
@@ -64,35 +32,20 @@ jobs:
           sudo install -m 755 "$FFMPEG_BIN" /usr/local/bin/ffmpeg
           sudo install -m 755 "$FFPROBE_BIN" /usr/local/bin/ffprobe
           ffmpeg -version
-
-      - name: Get Lemo-Opuscar and install dependencies
+      - name: Clone Lemo-Opuscar engine
+        run: git clone --depth 1 https://github.com/lemomo-ai/lemo-opuscar.git .lemo-opuscar
+      - name: Render complete film with Lemo-Opuscar
         shell: bash
-        run: |
-          git clone --depth 1 https://github.com/lemomo-ai/lemo-opuscar.git "$RUNNER_TEMP/lemo-opuscar"
-          cd "$RUNNER_TEMP/lemo-opuscar"
-          sh plugin/skills/lemo-opuscar/scripts/setup.sh deps
-
-      - name: Render film
-        shell: bash
-        env:
-          FILM_DIR: ${{ inputs.film_dir }}
-          FPS: ${{ inputs.fps }}
-          SIZE: ${{ inputs.size }}
         run: |
           set -euo pipefail
-          LIB="$RUNNER_TEMP/lemo-opuscar"
-          DEST="$LIB/films/render-job"
-          mkdir -p "$LIB/films"
-          cp -R "$GITHUB_WORKSPACE/$FILM_DIR" "$DEST"
-          cd "$LIB"
-          node core/render/video.mjs "$DEST" --fps "$FPS" --size "$SIZE" --workers 2 --out "$DEST/out/video.mp4"
-          mkdir -p "$GITHUB_WORKSPACE/rendered"
-          cp "$DEST/out/video.mp4" "$GITHUB_WORKSPACE/rendered/video.mp4"
-
-      - name: Upload MP4 artifact
+          export LIB="$GITHUB_WORKSPACE/.lemo-opuscar"
+          bash films/dronacharya/build.sh
+      - name: Upload finished MP4 and review stills
         uses: actions/upload-artifact@v4
         with:
-          name: lemo-opuscar-video
-          path: rendered/video.mp4
+          name: dronacharya-lemo-opuscar-film
+          path: |
+            films/dronacharya/out/dronacharya-telugu.mp4
+            films/dronacharya/out/stills/
           if-no-files-found: error
           retention-days: 7
