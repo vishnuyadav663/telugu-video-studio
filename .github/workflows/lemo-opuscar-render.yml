@@ -1,0 +1,98 @@
+name: Lemo-Opuscar Render
+
+on:
+  workflow_dispatch:
+    inputs:
+      film_dir:
+        description: "Repository folder containing the film index.html"
+        required: true
+        default: "films/dronacharya"
+        type: string
+      fps:
+        description: "Output frames per second"
+        required: true
+        default: "24"
+        type: choice
+        options: ["24", "30"]
+      size:
+        description: "Output dimensions"
+        required: true
+        default: "1080x1920"
+        type: choice
+        options: ["1080x1920", "1920x1080"]
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout your video project
+        uses: actions/checkout@v4
+
+      - name: Validate film folder
+        env:
+          FILM_DIR: ${{ inputs.film_dir }}
+        run: |
+          test -f "$FILM_DIR/index.html" || {
+            echo "::error::No index.html found in $FILM_DIR. Add a Lemo-Opuscar film project first."
+            exit 1
+          }
+
+      - name: Install Node.js and Python
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg 7+
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget xz-utils
+          mkdir -p "$RUNNER_TEMP/ffmpeg"
+          wget -q https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -O "$RUNNER_TEMP/ffmpeg.tar.xz"
+          tar -xJf "$RUNNER_TEMP/ffmpeg.tar.xz" -C "$RUNNER_TEMP/ffmpeg"
+          FFMPEG_BIN="$(find "$RUNNER_TEMP/ffmpeg" -type f -name ffmpeg -perm -111 | head -n 1)"
+          FFPROBE_BIN="$(find "$RUNNER_TEMP/ffmpeg" -type f -name ffprobe -perm -111 | head -n 1)"
+          test -n "$FFMPEG_BIN" && test -n "$FFPROBE_BIN"
+          sudo install -m 755 "$FFMPEG_BIN" /usr/local/bin/ffmpeg
+          sudo install -m 755 "$FFPROBE_BIN" /usr/local/bin/ffprobe
+          ffmpeg -version
+
+      - name: Get Lemo-Opuscar and install dependencies
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/lemomo-ai/lemo-opuscar.git "$RUNNER_TEMP/lemo-opuscar"
+          cd "$RUNNER_TEMP/lemo-opuscar"
+          sh plugin/skills/lemo-opuscar/scripts/setup.sh deps
+
+      - name: Render film
+        shell: bash
+        env:
+          FILM_DIR: ${{ inputs.film_dir }}
+          FPS: ${{ inputs.fps }}
+          SIZE: ${{ inputs.size }}
+        run: |
+          set -euo pipefail
+          LIB="$RUNNER_TEMP/lemo-opuscar"
+          DEST="$LIB/films/render-job"
+          mkdir -p "$LIB/films"
+          cp -R "$GITHUB_WORKSPACE/$FILM_DIR" "$DEST"
+          cd "$LIB"
+          node core/render/video.mjs "$DEST" --fps "$FPS" --size "$SIZE" --workers 2 --out "$DEST/out/video.mp4"
+          mkdir -p "$GITHUB_WORKSPACE/rendered"
+          cp "$DEST/out/video.mp4" "$GITHUB_WORKSPACE/rendered/video.mp4"
+
+      - name: Upload MP4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lemo-opuscar-video
+          path: rendered/video.mp4
+          if-no-files-found: error
+          retention-days: 7
