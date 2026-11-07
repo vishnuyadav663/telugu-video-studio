@@ -83,12 +83,12 @@ const Scene: React.FC<{ scene: ShortScene; index: number }> = ({ scene, index })
 
         {scene.visual === "crisis" && (
           <div style={{ marginTop: 38, color: "#FF7777", fontFamily: "Arial, sans-serif", fontSize: 68, fontWeight: 900 }}>
-            {countdown} DAYS?
+            2–3 WEEKS
           </div>
         )}
         {scene.visual === "vault" && (
           <div style={{ marginTop: 34, color: scene.accent, fontFamily: "Arial, sans-serif", fontSize: 76, fontWeight: 900 }}>
-            {goldCount === 46 ? "46.91" : goldCount} T
+            {interpolate(frame, [35, 115], [0, 46.91], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }).toFixed(2)} T
           </div>
         )}
         {scene.visual === "repayment" && (
@@ -123,6 +123,18 @@ const Scene: React.FC<{ scene: ShortScene; index: number }> = ({ scene, index })
           </g>
         </svg>
       )}
+
+      <div style={{
+        position: "absolute", bottom: 225, left: 66, right: 66,
+        padding: "18px 22px", borderRadius: 18,
+        background: "rgba(0,0,0,0.58)", borderLeft: `5px solid ${scene.accent}`,
+        color: "#FFFFFF", fontSize: 27, lineHeight: 1.5, fontWeight: 600,
+        textAlign: "center", opacity: interpolate(frame, [8, 18], [0, 1], {
+          extrapolateLeft: "clamp", extrapolateRight: "clamp"
+        })
+      }}>
+        {scene.narration}
+      </div>
 
       <div style={{ position: "absolute", bottom: 112, left: 76, right: 76 }}>
         <div style={{ height: 5, background: "#FFFFFF35", borderRadius: 8, overflow: "hidden" }}>
