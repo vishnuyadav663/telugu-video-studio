@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dronacharya — The Last Silence</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080706}
+canvas{display:block;width:100%;height:100%}
+#caption{position:fixed;left:7%;right:7%;bottom:10%;text-align:center;color:#f0d7aa;font-family:Cinzel,Georgia,serif;font-size:clamp(16px,2.2vw,30px);line-height:1.45;letter-spacing:.09em;text-shadow:0 3px 18px #000,0 0 24px #9b4d1c;opacity:0;transition:opacity .55s ease;pointer-events:none}
+#sub{display:block;margin-top:10px;font:500 10px Inter,sans-serif;letter-spacing:.34em;color:#d79b5a}
+#credit{position:fixed;top:4%;left:0;right:0;text-align:center;color:#b78a5b;font:500 9px Inter,sans-serif;letter-spacing:.42em;opacity:.7}
+#shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.34),transparent 28%,transparent 62%,rgba(0,0,0,.65))}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas><div id="credit">KURUKSHETRA · THE EIGHTEENTH DAY</div>
+<div id="caption"><span id="line"></span><span id="sub">THE FALL OF DRONACHARYA</span></div><div id="shade"></div>
+<script>
+(()=>{
+const c=document.getElementById('c'),ctx=c.getContext('2d'),cap=document.getElementById('caption'),line=document.getElementById('line');
+const W=1080,H=1920,D=10;
+let particles=[];
+function seeded(i){let x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+for(let i=0;i<170;i++) particles.push({x:seeded(i)*W,y:seeded(i+200)*H,r:1+seeded(i+400)*4,v:.35+seeded(i+500)*1.8,a:.12+seeded(i+600)*.45,drift:(seeded(i+700)-.5)*.8});
+function fit(){const dpr=Math.min(devicePixelRatio||1,2);c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+window.addEventListener('resize',fit);fit();
+const lerp=(a,b,t)=>a+(b-a)*t,clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=t=>{t=clamp(t);return t*t*(3-2*t)};
+function glow(x,y,r,color,alpha=1){let g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,color.replace('ALPHA',alpha));g.addColorStop(1,color.replace('ALPHA','0'));ctx.fillStyle=g;ctx.fillRect(x-r,y-r,2*r,2*r)}
+function path(points,fill,stroke=null,lw=1){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
+function silhouette(x,y,s,pose='stand',tone='#100f10'){
+ ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle=tone;ctx.strokeStyle=tone;ctx.lineCap='round';ctx.lineJoin='round';
+ if(pose==='seated'){
+  path([[-38,-125],[-62,-62],[-118,-12],[-88,8],[-15,-28],[48,5],[112,8],[120,-12],[50,-66],[40,-126]],tone);
+  ctx.lineWidth=24;ctx.beginPath();ctx.moveTo(-5,-25);ctx.lineTo(-70,2);ctx.moveTo(8,-25);ctx.lineTo(88,0);ctx.stroke();
+  ctx.lineWidth=18;ctx.beginPath();ctx.moveTo(-20,-108);ctx.lineTo(-65,-55);ctx.moveTo(20,-108);ctx.lineTo(65,-54);ctx.stroke();
+ }else{
+  path([[-38,-145],[-58,-70],[-45,0],[45,0],[58,-70],[38,-145]],tone);
+  ctx.lineWidth=25;ctx.beginPath();ctx.moveTo(-22,-40);ctx.lineTo(-45,0);ctx.moveTo(22,-40);ctx.lineTo(45,0);ctx.stroke();
+  ctx.lineWidth=18;ctx.beginPath();ctx.moveTo(-36,-125);ctx.lineTo(-75,-65);ctx.moveTo(36,-125);ctx.lineTo(70,-76);ctx.stroke();
+ }
+ path([[-38,-150],[-55,-126],[-48,-74],[48,-74],[55,-126],[38,-150]],tone);
+ ctx.beginPath();ctx.ellipse(0,-178,24,29,0,0,Math.PI*2);ctx.fill();
+ ctx.beginPath();ctx.ellipse(0,-203,25,10,0,Math.PI,Math.PI*2);ctx.fill();
+ path([[-14,-166],[0,-148],[14,-166],[9,-143],[0,-137],[-9,-143]],tone);
+ ctx.beginPath();ctx.arc(0,-211,10,0,Math.PI*2);ctx.fill();
+ ctx.restore();
+}
+function weapon(x,y,rot,alpha=1){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.globalAlpha=alpha;ctx.strokeStyle='#8b6743';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-110,0);ctx.quadraticCurveTo(0,-34,110,0);ctx.stroke();ctx.strokeStyle='#c19a63';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-110,0);ctx.lineTo(110,0);ctx.stroke();ctx.restore()}
+function drawSmoke(t){for(let i=0;i<13;i++){let x=(i*103+Math.sin(t*.22+i)*55)%W,y=H*.44-i*42+(t*8+i*71)%180;ctx.save();ctx.globalAlpha=.055;ctx.fillStyle='#a9a09a';ctx.filter='blur(34px)';ctx.beginPath();ctx.ellipse(x,y,110+i*3,38+i*2,Math.sin(i)*.2,0,Math.PI*2);ctx.fill();ctx.restore()}}
+function draw(t){
+ ctx.clearRect(0,0,W,H);
+ let bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#090a0d');bg.addColorStop(.4,'#21130f');bg.addColorStop(.72,'#4a1c0d');bg.addColorStop(1,'#080707');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ glow(540,1120,700,'rgba(217,83,22,ALPHA)',.62);glow(540,820,430,'rgba(219,158,91,ALPHA)',.16);
+ ctx.fillStyle='#160b08';ctx.fillRect(0,1190,W,730);
+ for(let i=0;i<26;i++){let x=i*46+Math.sin(i*8)*12;let h=28+seeded(i+9)*115;glow(x,1195-h,65,'rgba(255,99,26,ALPHA)',.5);ctx.fillStyle='#100b09';ctx.fillRect(x-8,1195-h,16,h)}
+ for(let i=0;i<16;i++){let x=i*83-20,y=1200+seeded(i+44)*85;ctx.fillStyle='#100d0c';ctx.fillRect(x,y-130,5,130);path([[x+3,y-130],[x+3,y-90],[x+42,y-110],[x+3,y-116]],'#21110d')}
+ for(let i=0;i<35;i++){let x=i*34+10,y=1190+seeded(i+70)*45;silhouette(x,y,.25+seeded(i+90)*.12,'stand','#0d0b0b')}
+ drawSmoke(t);
+ particles.forEach((p,i)=>{let y=(p.y-t*p.v*24+H*2)%(H);let x=(p.x+Math.sin(t*.7+i)*18+p.drift*t*8+W)%W;ctx.globalAlpha=p.a*(.65+.35*Math.sin(t*3+i));ctx.fillStyle=i%4?'#f17a32':'#ffd18b';ctx.shadowBlur=18;ctx.shadowColor='#ff7a2e';ctx.beginPath();ctx.arc(x,y,p.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;ctx.shadowBlur=0;
+ let ground=ctx.createLinearGradient(0,1230,0,H);ground.addColorStop(0,'rgba(20,11,9,.2)');ground.addColorStop(1,'#050505');ctx.fillStyle=ground;ctx.fillRect(0,1230,W,H-1230);
+ let z=1+ease(t/9)*.16,pan=lerp(0,-24,ease(t/10));ctx.save();ctx.translate(540+pan,1100);ctx.scale(z,z);ctx.translate(-540,-1100);
+ let seated=t>5.4;if(!seated){silhouette(520,1295,1.55,'stand','#100d0d')}else{silhouette(520,1295,1.55,'seated','#100d0d')}
+ ctx.save();ctx.globalAlpha=.24;ctx.shadowBlur=38;ctx.shadowColor='#e78a3c';ctx.strokeStyle='#c56d2d';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(520,1030,105,245,0,0,Math.PI*2);ctx.stroke();ctx.restore();
+ let fall=ease((t-3.4)/1.25);weapon(510+fall*95,1110+fall*215,fall*1.5,.95);
+ let approach=ease((t-6.2)/2.5);if(t>6.2){ctx.globalAlpha=approach*.82;silhouette(850-approach*80,1290,1.25,'stand','#080707');ctx.globalAlpha=1}
+ ctx.globalAlpha=.16;ctx.fillStyle='#d68a50';ctx.filter='blur(18px)';ctx.beginPath();ctx.ellipse(540,1320,480+Math.sin(t)*20,35,0,0,Math.PI*2);ctx.fill();ctx.filter='none';ctx.globalAlpha=1;
+ ctx.restore();
+ let v=ctx.createRadialGradient(540,850,260,540,900,1120);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.83)');ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+ for(let i=0;i<1200;i++){let x=seeded(i+Math.floor(t*30)*1200)*W,y=seeded(i+Math.floor(t*30)*1200+5000)*H;ctx.fillStyle=`rgba(255,230,200,${seeded(i+8)*.035})`;ctx.fillRect(x,y,2,2)}
+ let texts=[[.6,2.8,'THE GURU WHO COULD NOT BE DEFEATED'],[3.0,5.6,'A single rumour broke his resolve.'],[5.8,8.1,'He laid down his weapons… and closed his eyes.'],[8.2,9.8,'THE WARRIOR’S STORY ENDED IN SILENCE.']];
+ let current=texts.find(a=>t>=a[0]&&t<a[1]);if(current){line.textContent=current[2];cap.style.opacity=1}else cap.style.opacity=0;
+}
+window.renderAt=(t)=>draw(Math.max(0,Math.min(D,t)));
+let start=null;function loop(ts){if(start===null)start=ts;let t=(ts-start)/1000;draw(Math.min(t,D));if(t<D)requestAnimationFrame(loop);else{draw(D)}}
+if(new URLSearchParams(location.search).has('render')){document.documentElement.dataset.ready='yes';window.renderAt(0)}else requestAnimationFrame(loop);
+})();
+</script>
+</body></html>
