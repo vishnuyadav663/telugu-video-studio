@@ -1,0 +1,39 @@
+name: Render Dronacharya Scene
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Ensure Remotion browser
+        run: npx remotion browser ensure
+
+      - name: Render Dronacharya scene
+        run: |
+          mkdir -p out
+          npx remotion render src/index.tsx DronaFinalMoment out/drona-final-moment.mp4 --codec=h264
+
+      - name: Upload MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: drona-final-moment
+          path: out/drona-final-moment.mp4
+          if-no-files-found: error
+          retention-days: 7
