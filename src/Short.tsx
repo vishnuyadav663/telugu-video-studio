@@ -13,47 +13,127 @@ const Scene: React.FC<{ scene: ShortScene; index: number }> = ({ scene, index })
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const enter = spring({ frame, fps, config: { damping: 18, stiffness: 90 } });
-  const exit = interpolate(frame, [durationInFrames - 18, durationInFrames], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp"
+  const progress = interpolate(frame, [0, durationInFrames], [0, 1], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp"
   });
-  const opacity = enter * exit;
-  const drift = interpolate(frame, [0, durationInFrames], [0, -70]);
-  const scale = interpolate(frame, [0, durationInFrames], [1.08, 1]);
+  const exit = interpolate(frame, [durationInFrames - 12, durationInFrames], [1, 0], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp"
+  });
+  const zoom = interpolate(progress, [0, 1], [1.08, 1.0]);
+  const shake = scene.visual === "convoy" && frame >= 60 && frame <= 78
+    ? Math.sin(frame * 2.5) * 8 : 0;
+  const goldCount = Math.floor(interpolate(frame, [35, 115], [0, 46.91], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp"
+  }));
+  const countdown = Math.floor(interpolate(frame, [0, 60], [21, 15], {
+    extrapolateLeft: "clamp", extrapolateRight: "clamp"
+  }));
+  const palette: Record<ShortScene["visual"], string> = {
+    crisis: "radial-gradient(circle at 50% 35%, #49323A, #10151F 65%)",
+    reserves: "linear-gradient(145deg, #253344, #101722 70%)",
+    vault: "radial-gradient(circle at 50% 45%, #69502B, #17130F 68%)",
+    convoy: "linear-gradient(145deg, #35252A, #10151F 72%)",
+    airlift: "linear-gradient(160deg, #4B3A2A, #111722 70%)",
+    flight: "linear-gradient(145deg, #163C4A, #101722 72%)",
+    repayment: "linear-gradient(145deg, #1C463B, #101722 72%)",
+    payoff: "radial-gradient(circle at 50% 30%, #5C492B, #101722 70%)"
+  };
 
   return (
-    <AbsoluteFill style={{ backgroundColor: scene.background, color: "white", fontFamily: "'Noto Sans Telugu', 'Noto Sans', sans-serif", overflow: "hidden" }}>
+    <AbsoluteFill style={{
+      background: palette[scene.visual],
+      color: "#FFFFFF",
+      fontFamily: "'Noto Sans Telugu', 'Nirmala UI', sans-serif",
+      overflow: "hidden",
+      opacity: exit,
+      transform: `translate(${shake}px, ${-shake * 0.45}px) scale(${zoom})`
+    }}>
       <AbsoluteFill style={{
-        opacity: 0.5,
-        background: `radial-gradient(circle at 80% 24%, ${scene.accent}55 0%, transparent 36%), radial-gradient(circle at 12% 82%, #ffffff18 0%, transparent 35%)`,
-        transform: `translateY(${drift}px) scale(${scale})`
+        background: "radial-gradient(circle, transparent 35%, rgba(0,0,0,0.78) 100%)"
       }} />
-      <AbsoluteFill style={{ opacity: 0.12, backgroundImage: "linear-gradient(135deg, transparent 48%, #ffffff 49%, transparent 50%)", backgroundSize: "90px 90px" }} />
+      <AbsoluteFill style={{
+        opacity: 0.12,
+        backgroundImage: "linear-gradient(135deg, transparent 48%, #FFFFFF 49%, transparent 50%)",
+        backgroundSize: "100px 100px"
+      }} />
 
-      <div style={{ position: "absolute", top: 92, left: 76, right: 76, display: "flex", justifyContent: "space-between", alignItems: "center", opacity }}>
-        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 23, letterSpacing: 5, fontWeight: 800, color: scene.accent }}>TELUGU / STORIES</div>
-        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 20, color: "#FFFFFF99" }}>0{index + 1} / 05</div>
+      <div style={{
+        position: "absolute", top: 86, left: 70, right: 70,
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        opacity: enter
+      }}>
+        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 21, letterSpacing: 4, color: scene.accent, fontWeight: 800 }}>
+          INDIA • 1991
+        </div>
+        <div style={{ fontFamily: "Arial, sans-serif", fontSize: 19, color: "#FFFFFF99" }}>
+          {String(index + 1).padStart(2, "0")} / 08
+        </div>
       </div>
 
-      <div style={{ position: "absolute", left: 78, right: 78, top: 350, opacity, transform: `translateY(${(1 - enter) * 45}px)` }}>
-        <div style={{ display: "inline-block", padding: "13px 20px", border: `1px solid ${scene.accent}`, borderRadius: 50, color: scene.accent, fontFamily: "Arial, sans-serif", fontSize: 21, letterSpacing: 3, fontWeight: 700 }}>
-          {scene.eyebrow}
-        </div>
-        <div style={{ marginTop: 56, fontSize: 82, lineHeight: 1.38, fontWeight: 900, letterSpacing: -1, textShadow: "0 8px 35px #00000055", whiteSpace: "pre-line" }}>
-          {scene.headline}
-        </div>
-        <div style={{ width: 130, height: 8, background: scene.accent, marginTop: 48, borderRadius: 8 }} />
-        <div style={{ marginTop: 42, fontSize: 39, lineHeight: 1.65, color: "#E7EAF0", fontWeight: 500 }}>
-          {scene.supporting}
-        </div>
+      <div style={{
+        position: "absolute", top: 330, left: 76, right: 76,
+        opacity: enter, transform: `translateY(${(1 - enter) * 42}px)`
+      }}>
+        <div style={{
+          display: "inline-block", padding: "12px 19px",
+          border: `1px solid ${scene.accent}`, borderRadius: 40,
+          color: scene.accent, fontFamily: "Arial, sans-serif",
+          fontSize: 19, letterSpacing: 2.5, fontWeight: 700
+        }}>{scene.label}</div>
+
+        {scene.visual === "crisis" && (
+          <div style={{ marginTop: 38, color: "#FF7777", fontFamily: "Arial, sans-serif", fontSize: 68, fontWeight: 900 }}>
+            {countdown} DAYS?
+          </div>
+        )}
+        {scene.visual === "vault" && (
+          <div style={{ marginTop: 34, color: scene.accent, fontFamily: "Arial, sans-serif", fontSize: 76, fontWeight: 900 }}>
+            {goldCount === 46 ? "46.91" : goldCount} T
+          </div>
+        )}
+        {scene.visual === "repayment" && (
+          <div style={{ marginTop: 34, color: scene.accent, fontFamily: "Arial, sans-serif", fontSize: 54, fontWeight: 900 }}>
+            LOAN REPAID
+          </div>
+        )}
+
+        <div style={{
+          marginTop: 36, fontSize: 75, lineHeight: 1.42,
+          fontWeight: 900, letterSpacing: -1,
+          textShadow: "0 8px 35px #00000080", whiteSpace: "pre-line"
+        }}>{scene.headline}</div>
+        <div style={{
+          marginTop: 34, width: 125, height: 7,
+          background: scene.accent, borderRadius: 8
+        }} />
+        <div style={{
+          marginTop: 32, fontSize: 35, lineHeight: 1.65,
+          color: "#E8ECF3", fontWeight: 500
+        }}>{scene.subtitle}</div>
       </div>
 
-      <div style={{ position: "absolute", bottom: 112, left: 78, right: 78, opacity: 0.85 }}>
-        <div style={{ height: 5, background: "#FFFFFF30", borderRadius: 10, overflow: "hidden" }}>
-          <div style={{ width: `${((index + 1) / 5) * 100}%`, height: "100%", background: scene.accent }} />
+      {scene.visual === "flight" && (
+        <svg viewBox="0 0 900 300" style={{ position: "absolute", left: 70, right: 70, bottom: 330, width: "calc(100% - 140px)", height: 260 }}>
+          <path d="M80 210 Q430 -30 810 170" fill="none" stroke={scene.accent} strokeWidth="5" strokeDasharray="12 13" strokeDashoffset={interpolate(frame, [0, 150], [500, 0], { extrapolateRight: "clamp" })} />
+          <circle cx="80" cy="210" r="13" fill="#FFD166" />
+          <circle cx="810" cy="170" r="13" fill="#FFD166" />
+          <g fill="white" fontSize="30" fontFamily="Arial">
+            <text x="55" y="260">MUMBAI</text>
+            <text x="710" y="225">LONDON</text>
+          </g>
+        </svg>
+      )}
+
+      <div style={{ position: "absolute", bottom: 112, left: 76, right: 76 }}>
+        <div style={{ height: 5, background: "#FFFFFF35", borderRadius: 8, overflow: "hidden" }}>
+          <div style={{ width: `${((index + progress) / 8) * 100}%`, height: "100%", background: scene.accent }} />
         </div>
-        <div style={{ marginTop: 24, display: "flex", justifyContent: "space-between", fontFamily: "Arial, sans-serif", fontSize: 19, letterSpacing: 3, color: "#FFFFFF99" }}>
-          <span>SHORT DOCUMENTARY</span><span>FOLLOW FOR MORE</span>
+        <div style={{
+          marginTop: 22, display: "flex", justifyContent: "space-between",
+          fontFamily: "Arial, sans-serif", fontSize: 17,
+          letterSpacing: 2, color: "#FFFFFF99"
+        }}>
+          <span>TELUGU HISTORY</span><span>FOLLOW FOR MORE</span>
         </div>
       </div>
     </AbsoluteFill>
@@ -61,14 +141,18 @@ const Scene: React.FC<{ scene: ShortScene; index: number }> = ({ scene, index })
 };
 
 export const TeluguShort: React.FC = () => {
-  const framesPerScene = 270;
+  let from = 0;
   return (
-    <AbsoluteFill style={{ backgroundColor: "#101827" }}>
-      {shortContent.scenes.map((scene, index) => (
-        <Sequence key={scene.eyebrow} from={index * framesPerScene} durationInFrames={framesPerScene}>
-          <Scene scene={scene} index={index} />
-        </Sequence>
-      ))}
+    <AbsoluteFill style={{ backgroundColor: "#101722" }}>
+      {shortContent.scenes.map((scene, index) => {
+        const start = from;
+        from += scene.durationInFrames;
+        return (
+          <Sequence key={scene.id} from={start} durationInFrames={scene.durationInFrames}>
+            <Scene scene={scene} index={index} />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };
